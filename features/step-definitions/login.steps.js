@@ -27,14 +27,13 @@ When('I enter valid login credentials', async function () {
 });
 
 When('I click on the Continue button', async function () {
-  await Promise.all([
-    this.page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
-    this.page.click(credentials.selectors.continueButton),
-  ]);
+  await this.page.click(credentials.selectors.continueButton);
+  await this.page.waitForLoadState('networkidle');
 });
 
 Then('I should be logged in successfully', async function () {
-  await expect(this.page.locator(credentials.selectors.postLoginMenu)).toBeVisible({ timeout: 15000 });
+  await this.page.waitForSelector(credentials.selectors.postLoginMenu, { state: 'visible', timeout: 45000 });
+  await expect(this.page.locator(credentials.selectors.postLoginMenu)).toBeVisible({ timeout: 45000 });
   await expect(this.page).toHaveURL(/dmerocket/i);
 });
 

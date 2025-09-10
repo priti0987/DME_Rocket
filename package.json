@@ -8,7 +8,8 @@
     "clean": "rimraf reports test-results .playwright",
     "test:json": "npx cucumber-js --require src/support/world.cjs --require src/support/hooks.cjs --require \"src/steps/**/*.cjs\" --require \"features/step-definitions/**/*.js\" --format json:reports/json/cucumber.json",
     "report": "node reporter.js",
-    "test:report": "npm run clean && npm run test:json && npm run report"
+    "test:report": "npm run clean && npm run test:json && npm run report",
+    "test:dme": "IGNORE_HTTPS_ERRORS=true ROCKET_BASE_URL=https://staging.dmerocket.com/ ROCKET_EMAIL=arunkumar.b@hashroot.com ROCKET_PASSWORD='Pacs@Merge11' npm run test:report"
   },
   "keywords": [],
   "author": "",

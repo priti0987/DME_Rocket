@@ -18,6 +18,7 @@ class TestWorld extends World {
     await this.context.tracing.start({ screenshots: true, snapshots: true, sources: true });
     this.page = await this.context.newPage();
     this.baseUrl = config.BASE_URL;
+    this.browserName = 'chromium';
   }
 }
 
