@@ -402,14 +402,15 @@ Then('I should see the same MRN value that was used in the search', async functi
     // Look for MRN value in patient details page using multiple strategies
     let displayedMrn = null;
     
-    // Strategy 1: Look for MRN in the patient info section
+    // Strategy 1: Look for MRN in the patient info section using dynamic selectors
     const mrnSelectors = [
       '#text',  // Based on the screenshot, the MRN appears to be in an element with id="text"
       'input[readonly]',  // Readonly input field
-      'td:has-text("T4561")',  // Table cell containing MRN
       '.form-control[readonly]',  // Form control with readonly attribute
-      'span:has-text("T4561")',  // Span containing MRN
-      ':has-text("T4561")'  // Any element containing the MRN
+      `td:has-text("${searchedMrn}")`,  // Table cell containing the specific MRN
+      `span:has-text("${searchedMrn}")`,  // Span containing the specific MRN
+      `input[value="${searchedMrn}"]`,  // Input with the MRN as value
+      `:has-text("${searchedMrn}")`  // Any element containing the specific MRN
     ];
     
     for (const selector of mrnSelectors) {
