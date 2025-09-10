@@ -390,6 +390,80 @@ Then('I should be navigated to the patient details page', async function () {
   }
 });
 
+Then('I should see the same MRN value that was used in the search', async function () {
+  try {
+    // Get the MRN that was used in the search from test data
+    const searchedMrn = TestDataReader.getMRN('primary');
+    console.log(`Expected MRN from search: ${searchedMrn}`);
+    
+    // Wait for patient details page to load
+    await this.page.waitForLoadState('networkidle');
+    
+    // Look for MRN value in patient details page using multiple strategies
+    let displayedMrn = null;
+    
+    // Strategy 1: Look for MRN in the patient info section
+    const mrnSelectors = [
+      '#text',  // Based on the screenshot, the MRN appears to be in an element with id="text"
+      'input[readonly]',  // Readonly input field
+      'td:has-text("T4561")',  // Table cell containing MRN
+      '.form-control[readonly]',  // Form control with readonly attribute
+      'span:has-text("T4561")',  // Span containing MRN
+      ':has-text("T4561")'  // Any element containing the MRN
+    ];
+    
+    for (const selector of mrnSelectors) {
+      try {
+        const element = this.page.locator(selector).first();
+        const isVisible = await element.isVisible();
+        
+        if (isVisible) {
+          const elementText = await element.textContent();
+          const elementValue = await element.inputValue().catch(() => null);
+          
+          // Check both text content and input value
+          const content = elementValue || elementText;
+          
+          if (content && content.trim() === searchedMrn) {
+            displayedMrn = content.trim();
+            console.log(`Found matching MRN in element: ${selector} = ${displayedMrn}`);
+            break;
+          } else if (content) {
+            console.log(`Found MRN in ${selector}: ${content.trim()}, but doesn't match search MRN: ${searchedMrn}`);
+          }
+        }
+      } catch (error) {
+        // Continue to next selector if this one fails
+        continue;
+      }
+    }
+    
+    // Strategy 2: If not found with specific selectors, search in page content
+    if (!displayedMrn) {
+      const pageContent = await this.page.textContent('body');
+      if (pageContent && pageContent.includes(searchedMrn)) {
+        displayedMrn = searchedMrn;
+        console.log(`Found MRN in page content: ${displayedMrn}`);
+      }
+    }
+    
+    // Verify the MRN matches
+    if (displayedMrn) {
+      expect(displayedMrn).toBe(searchedMrn);
+      console.log(`✅ MRN verification successful: Search MRN (${searchedMrn}) matches Patient Details MRN (${displayedMrn})`);
+    } else {
+      // Take screenshot for debugging
+      await this.page.screenshot({ path: 'mrn-verification-error.png', fullPage: true });
+      throw new Error(`Could not find MRN ${searchedMrn} in patient details page. Please check the page content.`);
+    }
+    
+  } catch (error) {
+    console.error('Error verifying MRN match:', error.message);
+    await this.page.screenshot({ path: 'mrn-verification-error.png', fullPage: true });
+    throw error;
+  }
+});
+
 // Utility step for clearing search
 When('I clear the search field', async function () {
   const clearButton = this.page.locator(credentials.selectors.patientSearch.clearButton);

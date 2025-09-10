@@ -2,7 +2,7 @@
 Feature: Patient Search - Simple
 
   @smoke @patient-search-mrn-simple
-  Scenario: Search patient by MRN and click on record
+  Scenario: Search patient by MRN and verify details
     Given I launch the Rocket application
     When I enter valid login credentials
     And I click on the Continue button
@@ -11,3 +11,4 @@ Feature: Patient Search - Simple
     Then I should see the patient details displayed
     When I click on the first patient record
     Then I should be navigated to the patient details page
+    And I should see the same MRN value that was used in the search

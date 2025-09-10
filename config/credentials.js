@@ -28,6 +28,16 @@ const selectors = {
     noResultsMessage: '.no-results, .empty-state, :has-text("No patients found"), :has-text("Results 1-10")',
     loadingIndicator: '.loading, .spinner, [data-loading="true"]',
     paginationInfo: ':has-text("Results"), .pagination-info'
+  },
+  // Patient Details selectors
+  patientDetails: {
+    pageTitle: 'h1:has-text("Patient Details"), h1.page-title',
+    mrnField: '#text, .patient-info .form-control[readonly], input[value*="T4561"], td:has-text("T4561")',
+    mrnValue: 'td:has-text("T4561"), .form-control[readonly], #text',
+    patientName: 'h1:has-text("Dragon Breath"), .patient-name',
+    patientInfo: '.patient-info, #Patient-Info',
+    deactivateButton: 'button:has-text("Deactivate Patient")',
+    backToPatients: 'button:has-text("Back to Patients"), a:has-text("Back to Patients")'
   }
 };
 
