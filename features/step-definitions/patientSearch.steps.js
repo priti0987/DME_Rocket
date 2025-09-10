@@ -127,25 +127,29 @@ Then('I should see no patient results', async function () {
     // Wait a moment for search to complete
     await this.page.waitForTimeout(3000);
     
-    // Check for no results message or empty table
-    const noResultsMessage = this.page.locator(credentials.selectors.patientSearch.noResultsMessage);
-    const resultsTable = this.page.locator(credentials.selectors.patientSearch.resultsTable);
-    
-    // Either no results message should be visible OR table should be empty
+    // Check for specific "No patients found" text in the results tbody
+    const noResultsMessage = this.page.locator('#patient-search-results:has-text("No patients found")');
     const noResultsVisible = await noResultsMessage.isVisible();
-    const tableVisible = await resultsTable.isVisible();
     
     if (noResultsVisible) {
       console.log('No results message displayed as expected');
       await expect(noResultsMessage).toBeVisible();
-    } else if (tableVisible) {
-      // Check if table is empty
-      const patientRows = this.page.locator(credentials.selectors.patientSearch.patientRow);
-      const rowCount = await patientRows.count();
-      expect(rowCount).toBe(0);
-      console.log('Results table is empty as expected');
     } else {
-      console.log('No patient results displayed as expected');
+      // Check if table has no data rows (excluding header)
+      const patientRows = this.page.locator('#patient-search-results tr');
+      const rowCount = await patientRows.count();
+      
+      if (rowCount === 0) {
+        console.log('Results table is empty as expected');
+      } else {
+        // Check if the only content is "No patients found"
+        const tableContent = await this.page.locator('#patient-search-results').textContent();
+        if (tableContent && tableContent.includes('No patients found')) {
+          console.log('No patients found message displayed in results table');
+        } else {
+          throw new Error(`Expected no results, but found ${rowCount} rows with content: ${tableContent}`);
+        }
+      }
     }
     
   } catch (error) {

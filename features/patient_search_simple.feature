@@ -1,0 +1,11 @@
+@patient-search-simple
+Feature: Patient Search - Simple
+
+  @smoke @patient-search-mrn-simple
+  Scenario: Search patient by MRN after login
+    Given I launch the Rocket application
+    When I enter valid login credentials
+    And I click on the Continue button
+    And I dismiss any popup if displayed
+    When I enter the MRN in the MRN search field
+    Then I should see the patient details displayed

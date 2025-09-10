@@ -3,8 +3,10 @@ Feature: Patient Search
 
   Background:
     Given I launch the Rocket application
-    And I dismiss any popup if displayed
+    When I enter valid login credentials
+    And I click on the Continue button
     And I should be logged in successfully
+    And I dismiss any popup if displayed
 
   @smoke @patient-search-mrn
   Scenario: Search patient by MRN
