@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx cucumber-js --require src/support/world.cjs --require src/support/hooks.cjs --require \"src/steps/**/*.cjs\" --format progress",
+    "test": "npx cucumber-js --require src/support/world.cjs --require src/support/hooks.cjs --require \"src/steps/**/*.cjs\" --require \"features/step-definitions/**/*.js\" --format progress",
     "clean": "rimraf reports test-results .playwright",
-    "test:json": "npx cucumber-js --require src/support/world.cjs --require src/support/hooks.cjs --require \"src/steps/**/*.cjs\" --format json:reports/json/cucumber.json",
+    "test:json": "npx cucumber-js --require src/support/world.cjs --require src/support/hooks.cjs --require \"src/steps/**/*.cjs\" --require \"features/step-definitions/**/*.js\" --format json:reports/json/cucumber.json",
     "report": "node reporter.js",
     "test:report": "npm run clean && npm run test:json && npm run report"
   },
