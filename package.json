@@ -1,0 +1,19 @@
+{
+  "name": "framework-skeleton",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx cucumber-js --require src/support/world.cjs --require src/support/hooks.cjs --require \"src/steps/**/*.cjs\" --format progress",
+    "clean": "rimraf reports test-results .playwright",
+    "test:json": "npx cucumber-js --require src/support/world.cjs --require src/support/hooks.cjs --require \"src/steps/**/*.cjs\" --format json:reports/json/cucumber.json",
+    "report": "node reporter.js",
+    "test:report": "npm run clean && npm run test:json && npm run report"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^17.2.2"
+  }
+}

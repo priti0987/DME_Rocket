@@ -1,0 +1,30 @@
+name: CI
+on:
+  push:
+    branches: [ main, '**' ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci || npm i
+      - run: npx playwright install --with-deps
+      - run: npm run test:json
+      - run: node reporter.js
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-html-report
+          path: reports/html
+      - name: Upload traces/videos
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            test-results
+            reports/assets/videos
