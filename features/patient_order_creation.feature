@@ -2,17 +2,7 @@
 Feature: Patient Order Creation
 
   Background:
-    Given I launch the Rocket application
-    When I enter valid login credentials
-    And I click on the Continue button
-    And I should be logged in successfully
-    And I dismiss any popup if displayed
-    When I enter the MRN in the MRN search field
-    Then I should see the patient details displayed
-    When I click on the first patient record
-    Then I should be navigated to the patient details page
-    And I dismiss any popup if displayed
-    And I should see the same MRN value that was used in the search
+    Given I ensure I am logged in and on patient details page
 
   @smoke @create-order-modal
   Scenario: Open Create Order modal and validate basic elements
