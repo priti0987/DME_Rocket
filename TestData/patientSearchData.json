@@ -1,0 +1,20 @@
+{
+  "patientSearch": {
+    "MRN": "1243959",
+    "expectedPatientName": "Test Patient",
+    "searchCriteria": {
+      "primaryMRN": "1243959",
+      "alternativeMRNs": ["DH12395d3", "T4561", "MRN1757050146032QA"],
+      "testScenarios": {
+        "validMRN": "1243959",
+        "invalidMRN": "9999999",
+        "partialMRN": "1243"
+      }
+    }
+  },
+  "metadata": {
+    "lastUpdated": "2025-09-10",
+    "environment": "staging",
+    "description": "Patient search test data for DME ROCKET E2E automation"
+  }
+}
