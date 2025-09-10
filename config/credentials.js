@@ -9,6 +9,10 @@ const selectors = {
   password: '#password',
   continueButton: 'button[type="submit"]',
   postLoginMenu: '#dme-sidebar-menu',
+  // Popup/Modal selectors
+  modalDialog: 'div.rocket-modal-dialog, div[role="dialog"], .modal-dialog',
+  modalCancelButton: 'button:has-text("Cancel"), button[data-dismiss="modal"], .modal button:has-text("Cancel")',
+  modalCloseButton: 'button.close, .modal-header button[aria-label="Close"], button[data-bs-dismiss="modal"]',
 };
 
 module.exports = {
