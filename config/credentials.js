@@ -22,6 +22,9 @@ const selectors = {
     clearButton: 'button:has-text("Clear Search"), button[type="button"]:has-text("Clear")',
     resultsTable: 'table.table-responsive, table.table-striped, .patient-search-results table',
     patientRow: 'tbody tr, tr:has(td)',
+    clickablePatientRow: 'tbody tr:has(td) a, tbody tr:has(td)[onclick], tbody tr:has(td)[data-href], tbody tr:has(td) td:first-child',
+    firstPatientRecord: 'tbody tr:first-child, #patient-search-results tr:first-child',
+    patientMrnCell: 'tbody tr td:first-child, tbody tr td:has-text("MRN")',
     noResultsMessage: '.no-results, .empty-state, :has-text("No patients found"), :has-text("Results 1-10")',
     loadingIndicator: '.loading, .spinner, [data-loading="true"]',
     paginationInfo: ':has-text("Results"), .pagination-info'
