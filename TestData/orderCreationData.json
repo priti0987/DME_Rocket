@@ -1,0 +1,64 @@
+{
+  "orderCreation": {
+    "defaultOrder": {
+      "orderType": "DME Equipment",
+      "physician": "Dr. Smith",
+      "diagnosis": "Mobility Assistance Required",
+      "notes": "Patient requires mobility assistance equipment for daily activities",
+      "priority": "Standard"
+    },
+    "orderTypes": [
+      "DME Equipment",
+      "Medical Supplies",
+      "Respiratory Equipment",
+      "Mobility Aids",
+      "Orthotic Devices"
+    ],
+    "physicians": [
+      "Dr. Smith",
+      "Dr. Johnson",
+      "Dr. Williams",
+      "Dr. Brown",
+      "Dr. Davis"
+    ],
+    "priorities": [
+      "Standard",
+      "Urgent",
+      "Rush",
+      "Stat"
+    ],
+    "testScenarios": {
+      "urgentOrder": {
+        "orderType": "Respiratory Equipment",
+        "physician": "Dr. Johnson",
+        "diagnosis": "Respiratory support needed",
+        "notes": "Urgent respiratory equipment required for patient care",
+        "priority": "Urgent"
+      },
+      "standardOrder": {
+        "orderType": "Mobility Aids",
+        "physician": "Dr. Williams",
+        "diagnosis": "Post-surgery mobility support",
+        "notes": "Standard mobility aids for post-operative recovery",
+        "priority": "Standard"
+      },
+      "rushOrder": {
+        "orderType": "Medical Supplies",
+        "physician": "Dr. Brown",
+        "diagnosis": "Wound care supplies needed",
+        "notes": "Rush order for wound care supplies",
+        "priority": "Rush"
+      }
+    },
+    "validationMessages": {
+      "success": "Order created successfully",
+      "missingFields": "Please fill in all required fields",
+      "invalidData": "Please check the entered data"
+    }
+  },
+  "metadata": {
+    "lastUpdated": "2025-09-10",
+    "environment": "staging",
+    "description": "Order creation test data for DME ROCKET E2E automation"
+  }
+}

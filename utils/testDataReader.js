@@ -83,6 +83,61 @@ class TestDataReader {
   static getAlternativeMRNs() {
     return this.readData('patientSearchData', 'patientSearch.searchCriteria.alternativeMRNs');
   }
+
+  // Order Creation Data Methods
+  
+  /**
+   * Get order creation data
+   * @param {string} type - Order type (default, urgent, standard, rush)
+   * @returns {object} - Order creation data
+   */
+  static getOrderData(type = 'default') {
+    const data = this.readData('orderCreationData', 'orderCreation');
+    switch (type) {
+      case 'default':
+        return data.defaultOrder;
+      case 'urgent':
+        return data.testScenarios.urgentOrder;
+      case 'standard':
+        return data.testScenarios.standardOrder;
+      case 'rush':
+        return data.testScenarios.rushOrder;
+      default:
+        return data.defaultOrder;
+    }
+  }
+
+  /**
+   * Get available order types
+   * @returns {array} - Array of order types
+   */
+  static getOrderTypes() {
+    return this.readData('orderCreationData', 'orderCreation.orderTypes');
+  }
+
+  /**
+   * Get available physicians
+   * @returns {array} - Array of physicians
+   */
+  static getPhysicians() {
+    return this.readData('orderCreationData', 'orderCreation.physicians');
+  }
+
+  /**
+   * Get available priorities
+   * @returns {array} - Array of priorities
+   */
+  static getPriorities() {
+    return this.readData('orderCreationData', 'orderCreation.priorities');
+  }
+
+  /**
+   * Get validation messages
+   * @returns {object} - Validation messages
+   */
+  static getValidationMessages() {
+    return this.readData('orderCreationData', 'orderCreation.validationMessages');
+  }
 }
 
 module.exports = TestDataReader;

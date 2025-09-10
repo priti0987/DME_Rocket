@@ -37,7 +37,38 @@ const selectors = {
     patientName: 'h1, .patient-name',
     patientInfo: '.patient-info, #Patient-Info',
     deactivateButton: 'button:has-text("Deactivate Patient")',
-    backToPatients: 'button:has-text("Back to Patients"), a:has-text("Back to Patients")'
+    backToPatients: 'button:has-text("Back to Patients"), a:has-text("Back to Patients")',
+    createNewOrderButton: 'button:has-text("Create New Order"), .btn:has-text("Create New Order"), a:has-text("Create New Order")'
+  },
+  // Order Creation selectors (specific DOM references)
+  orderCreation: {
+    // Modal and form
+    modal: '#rocket-modal, .rocket-modal-dialog',
+    pageTitle: 'h1:has-text("Create Order"), h1:has-text("New Order"), .page-title',
+    orderForm: 'form[id*="order"], form.order-form, .order-creation-form, #rocket-modal form',
+    
+    // Specific form fields with exact DOM selectors
+    clientField: 'select#ClientId.form-select',
+    locationField: 'select#ClientLocationId.form-select', 
+    dateOfServiceField: 'input#DateOfService.form-control.datepicker',
+    orderingProviderField: 'select#OrderingProviderId.form-select',
+    supervisingProviderField: 'select#SupervisingProviderId.form-select',
+    fitterField: 'select#FitterAccountId.form-select',
+    notesField: 'textarea#OrderNotes.form-control',
+    
+    // Action buttons with specific DOM
+    saveAndCloseButton: 'div#rocket-modal-btn-submit.btn.btn-add.rocket-text-body.d-block',
+    cancelButton: 'button:has-text("Cancel"), .btn-secondary',
+    
+    // Validation and confirmation
+    successMessage: '.alert-success, .success-message, :has-text("Order created successfully")',
+    errorMessage: '.alert-danger, .error-message, .validation-error',
+    
+    // Order list/history
+    ordersList: '.orders-list, .patient-orders, #orders-table, .order-summary',
+    newOrderRow: 'tr:first-child, .order-item:first-child',
+    orderStatus: '.order-status, .status-badge',
+    patientOrderSummary: '.patient-order-summary, #patient-orders'
   }
 };
 

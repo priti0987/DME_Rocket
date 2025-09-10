@@ -1,9 +1,9 @@
 {
   "patientSearch": {
-    "MRN": "T4561",
+    "MRN": "MRN1757050028188QA",
     "expectedPatientName": "Test Patient",
     "searchCriteria": {
-      "primaryMRN": "T4561",
+      "primaryMRN": "MRN1757050028188QA",
       "alternativeMRNs": ["DH12395d3", "T4561", "MRN1757050146032QA"],
       "testScenarios": {
         "validMRN": "T4561",
