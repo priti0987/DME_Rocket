@@ -91,31 +91,207 @@ Given('I ensure I am logged in and on patient details page', async function () {
     const mrn = TestDataReader.getMRN('primary');
     console.log(`Searching for patient with MRN: ${mrn}`);
     
+    // Wait for page to be fully loaded after login
+    await this.page.waitForTimeout(3000);
+    
+    // Check if we're on the main dashboard or need to navigate to patient search
+    const postLoginUrl = this.page.url();
+    console.log(`Current URL after login: ${postLoginUrl}`);
+    
+    // Try to find MRN search field with multiple selectors
+    const mrnSelectors = [
+      'input[id="PatientSearchQuery_MRN"]',
+      'input[name="PatientSearchQuery_MRN"]', 
+      'input.form-control[data-val-required*="MRN"]',
+      'input[placeholder*="MRN"]',
+      '#PatientSearchQuery_MRN'
+    ];
+    
+    let mrnField = null;
+    for (const selector of mrnSelectors) {
+      try {
+        const field = this.page.locator(selector);
+        const isVisible = await field.isVisible();
+        if (isVisible) {
+          mrnField = field;
+          console.log(`✓ Found MRN field with selector: ${selector}`);
+          break;
+        }
+      } catch (error) {
+        continue;
+      }
+    }
+    
+    if (!mrnField) {
+      console.log('MRN field not found, taking screenshot for debugging...');
+      await this.page.screenshot({ path: 'mrn-field-not-found.png', fullPage: true });
+      throw new Error('MRN search field not found on the page');
+    }
+    
     // Fill MRN search field
-    const mrnField = this.page.locator(credentials.selectors.patientSearch.mrnField);
     await mrnField.waitFor({ state: 'visible', timeout: 15000 });
     await mrnField.fill('');
     await mrnField.fill(mrn);
-    await this.page.keyboard.press('Enter');
-    await this.page.waitForLoadState('networkidle');
     
-    // Click on first patient record
-    const firstPatientRecord = this.page.locator(credentials.selectors.patientSearch.firstPatientRecord).first();
-    await firstPatientRecord.waitFor({ state: 'visible', timeout: 10000 });
-    
-    // Dismiss any modal before clicking
+    // Try different ways to submit the search
     try {
+      // First try pressing Enter
+      await this.page.keyboard.press('Enter');
+      await this.page.waitForTimeout(2000);
+    } catch (error) {
+      // If Enter doesn't work, try finding and clicking search button
+      const searchButton = this.page.locator(credentials.selectors.patientSearch.searchButton);
+      if (await searchButton.isVisible()) {
+        await searchButton.click();
+      }
+    }
+    
+    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForTimeout(2000);
+    
+    // Look for patient results with multiple selectors
+    const resultSelectors = [
+      'tbody tr:first-child',
+      '#patient-search-results tr:first-child',
+      'table tr:has(td):first-child',
+      '.patient-search-results tr:first-child'
+    ];
+    
+    let firstPatientRecord = null;
+    for (const selector of resultSelectors) {
+      try {
+        const record = this.page.locator(selector);
+        const isVisible = await record.isVisible();
+        if (isVisible) {
+          firstPatientRecord = record;
+          console.log(`✓ Found patient record with selector: ${selector}`);
+          break;
+        }
+      } catch (error) {
+        continue;
+      }
+    }
+    
+    if (!firstPatientRecord) {
+      console.log('No patient records found, taking screenshot for debugging...');
+      await this.page.screenshot({ path: 'no-patient-results.png', fullPage: true });
+      throw new Error(`No patient records found for MRN: ${mrn}`);
+    }
+    
+    // Handle any modal dialogs that might be blocking the click
+    try {
+      // Wait a bit for any modals to appear
+      await this.page.waitForTimeout(2000);
+      
+      // Check for specific client location modal
+      const clientLocationModal = this.page.locator('form[action="/Config/Account/SetClientLocations"]');
+      if (await clientLocationModal.isVisible()) {
+        console.log('Client location modal detected, dismissing...');
+        
+        // Try to find and click a close/cancel button
+        const closeButtons = [
+          'button:has-text("Cancel")',
+          'button:has-text("Close")',
+          'button.btn-secondary',
+          '.modal-header button[aria-label="Close"]',
+          'button[data-bs-dismiss="modal"]'
+        ];
+        
+        let modalDismissed = false;
+        for (const buttonSelector of closeButtons) {
+          try {
+            const button = this.page.locator(buttonSelector);
+            if (await button.isVisible()) {
+              await button.click();
+              console.log(`✓ Dismissed modal using: ${buttonSelector}`);
+              modalDismissed = true;
+              break;
+            }
+          } catch (error) {
+            continue;
+          }
+        }
+        
+        if (!modalDismissed) {
+          // If no button found, try ESC key
+          await this.page.keyboard.press('Escape');
+          console.log('✓ Dismissed modal using ESC key');
+        }
+        
+        await this.page.waitForTimeout(1000);
+      }
+      
+      // Check for general modal dialogs
       const modalDialog = this.page.locator(credentials.selectors.modalDialog);
-      const isModalVisible = await modalDialog.isVisible();
-      if (isModalVisible) {
+      if (await modalDialog.isVisible()) {
+        console.log('General modal detected, dismissing...');
         await this.page.keyboard.press('Escape');
         await this.page.waitForTimeout(1000);
       }
     } catch (error) {
-      // Ignore
+      console.log('Modal handling completed (errors are normal)');
     }
     
-    await firstPatientRecord.click();
+    // Try to get the patient URL before attempting click
+    let patientUrl = null;
+    try {
+      const href = await firstPatientRecord.getAttribute('onclick');
+      if (href && href.includes('window.location.href=')) {
+        const url = href.match(/'([^']+)'/)?.[1];
+        if (url) {
+          patientUrl = credentials.baseUrl.replace(/\/$/, '') + url;
+          console.log(`Patient URL extracted: ${patientUrl}`);
+        }
+      }
+    } catch (error) {
+      console.log('Could not extract patient URL from onclick attribute');
+    }
+    
+    // Force click on the patient record with retry logic
+    let clickSuccess = false;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`Attempting to click patient record (attempt ${attempt}/3)...`);
+        await firstPatientRecord.click({ force: true, timeout: 10000 });
+        
+        // Wait for navigation
+        await this.page.waitForLoadState('networkidle', { timeout: 10000 });
+        
+        // Check if we navigated successfully
+        const currentUrl = this.page.url();
+        if (currentUrl.includes('/Patient/')) {
+          console.log(`✓ Click successful, navigated to: ${currentUrl}`);
+          clickSuccess = true;
+          break;
+        } else {
+          console.log(`Click registered but no navigation. Current URL: ${currentUrl}`);
+        }
+      } catch (error) {
+        console.log(`Click attempt ${attempt} failed: ${error.message}`);
+        if (attempt < 3) {
+          await this.page.waitForTimeout(2000);
+          // Try dismissing any remaining modals
+          await this.page.keyboard.press('Escape');
+          await this.page.waitForTimeout(1000);
+        }
+      }
+    }
+    
+    // If click didn't work, try direct navigation
+    if (!clickSuccess && patientUrl) {
+      try {
+        console.log(`Direct navigation to: ${patientUrl}`);
+        await this.page.goto(patientUrl);
+        await this.page.waitForLoadState('networkidle');
+        clickSuccess = true;
+      } catch (error) {
+        console.log(`Direct navigation failed: ${error.message}`);
+      }
+    }
+    
+    if (!clickSuccess) {
+      throw new Error('Failed to navigate to patient details page via click or direct navigation');
+    }
     await this.page.waitForLoadState('networkidle');
     
     // Verify we're on patient details page
