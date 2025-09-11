@@ -13,6 +13,12 @@ const selectors = {
   modalDialog: 'div.rocket-modal-dialog, div[role="dialog"], .modal-dialog',
   modalCancelButton: 'button:has-text("Cancel"), button[data-dismiss="modal"], .modal button:has-text("Cancel")',
   modalCloseButton: 'button.close, .modal-header button[aria-label="Close"], button[data-bs-dismiss="modal"]',
+  // Set Location Modal specific selectors
+  setLocationModal: {
+    modal: 'div#rocket-modal[role="dialog"]',
+    cancelButton: 'div#rocket-modal-btn-cancel.btn.btn-cancel.rocket-text-body.d-block',
+    form: 'form[method="post"][action="/Config/Account/SetClientLocations"]'
+  },
   // Patient Search selectors
   patientSearch: {
     mrnField: 'input[id="PatientSearchQuery_MRN"], input[name="PatientSearchQuery_MRN"], input.form-control[data-val-required*="MRN"]',

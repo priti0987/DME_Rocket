@@ -7,5 +7,6 @@ Feature: Rocket login
     And I click on the Continue button
     And I dismiss any popup if displayed
     Then I should be logged in successfully
+    And click on the Cancel button of set location modal
 
 
