@@ -2,7 +2,17 @@
  * Data Generator Utility for creating dynamic test data
  */
 
+const fs = require('fs');
+const path = require('path');
+
 class DataGenerator {
+  // Static property to store current session data
+  static sessionData = {
+    currentMRN: null,
+    currentPatientData: null,
+    currentInsuranceData: null,
+    currentOrderData: null
+  };
   /**
    * Generate random integer with specified length
    * @param {number} length - Number of digits
@@ -74,11 +84,11 @@ class DataGenerator {
   }
 
   /**
-   * Generate a complete patient data object
+   * Generate a complete patient data object and store it in session
    * @returns {object} - Patient data with all required fields
    */
   static generatePatientData() {
-    return {
+    const patientData = {
       mrn: this.generateMRN(),
       firstName: this.generateFirstName(),
       lastName: this.generateLastName(),
@@ -86,14 +96,63 @@ class DataGenerator {
       client: 'Beaufort Orthopaedic Sports & Spine',
       language: 'English'
     };
+    
+    // Store in session for later retrieval
+    this.sessionData.currentMRN = patientData.mrn;
+    this.sessionData.currentPatientData = patientData;
+    
+    // Also save to file for persistence across test runs
+    this.saveToFile('patientData', patientData);
+    
+    return patientData;
   }
 
   /**
-   * Generate a complete insurance data object
+   * Get the current MRN from session or file
+   * @returns {string|null} - Current MRN or null if not found
+   */
+  static getCurrentMRN() {
+    if (this.sessionData.currentMRN) {
+      return this.sessionData.currentMRN;
+    }
+    
+    // Try to load from file
+    const patientData = this.loadFromFile('patientData');
+    if (patientData && patientData.mrn) {
+      this.sessionData.currentMRN = patientData.mrn;
+      this.sessionData.currentPatientData = patientData;
+      return patientData.mrn;
+    }
+    
+    return null;
+  }
+
+  /**
+   * Get the current patient data from session or file
+   * @returns {object|null} - Current patient data or null if not found
+   */
+  static getCurrentPatientData() {
+    if (this.sessionData.currentPatientData) {
+      return this.sessionData.currentPatientData;
+    }
+    
+    // Try to load from file
+    const patientData = this.loadFromFile('patientData');
+    if (patientData) {
+      this.sessionData.currentPatientData = patientData;
+      this.sessionData.currentMRN = patientData.mrn;
+      return patientData;
+    }
+    
+    return null;
+  }
+
+  /**
+   * Generate a complete insurance data object and store it in session
    * @returns {object} - Insurance data with all required fields
    */
   static generateInsuranceData() {
-    return {
+    const insuranceData = {
       provider: 'Medicare Part A and B',
       policyNumber: this.generatePolicyNumber(),
       groupNumber: this.generateGroupNumber(),
@@ -112,6 +171,107 @@ class DataGenerator {
       },
       coinsurance: '100'
     };
+    
+    // Store in session for later retrieval
+    this.sessionData.currentInsuranceData = insuranceData;
+    
+    // Also save to file for persistence
+    this.saveToFile('insuranceData', insuranceData);
+    
+    return insuranceData;
+  }
+
+  /**
+   * Generate order data with dynamic content
+   * @returns {object} - Order data with all required fields
+   */
+  static generateOrderData() {
+    const currentDate = new Date();
+    const formattedDate = `${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}-${currentDate.getFullYear()}`;
+    
+    const orderData = {
+      dateOfService: formattedDate,
+      notes: `QA Order created on ${formattedDate} - MRN: ${this.getCurrentMRN() || 'N/A'} - Test ID: ${this.randomAlpha(4)}${this.randomInt(3)}`
+    };
+    
+    // Store in session for later retrieval
+    this.sessionData.currentOrderData = orderData;
+    
+    // Also save to file for persistence
+    this.saveToFile('orderData', orderData);
+    
+    return orderData;
+  }
+
+  /**
+   * Save data to file in TestData directory
+   * @param {string} dataType - Type of data (patientData, insuranceData, orderData)
+   * @param {object} data - Data to save
+   */
+  static saveToFile(dataType, data) {
+    try {
+      const testDataDir = path.join(process.cwd(), 'TestData');
+      
+      // Ensure TestData directory exists
+      if (!fs.existsSync(testDataDir)) {
+        fs.mkdirSync(testDataDir, { recursive: true });
+      }
+      
+      const filePath = path.join(testDataDir, `${dataType}.json`);
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+      console.log(`✓ Saved ${dataType} to ${filePath}`);
+    } catch (error) {
+      console.warn(`⚠ Failed to save ${dataType} to file:`, error.message);
+    }
+  }
+
+  /**
+   * Load data from file in TestData directory
+   * @param {string} dataType - Type of data to load
+   * @returns {object|null} - Loaded data or null if not found
+   */
+  static loadFromFile(dataType) {
+    try {
+      const testDataDir = path.join(process.cwd(), 'TestData');
+      const filePath = path.join(testDataDir, `${dataType}.json`);
+      
+      if (fs.existsSync(filePath)) {
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        console.log(`✓ Loaded ${dataType} from ${filePath}`);
+        return data;
+      }
+    } catch (error) {
+      console.warn(`⚠ Failed to load ${dataType} from file:`, error.message);
+    }
+    
+    return null;
+  }
+
+  /**
+   * Clear all session data and files
+   */
+  static clearSessionData() {
+    this.sessionData = {
+      currentMRN: null,
+      currentPatientData: null,
+      currentInsuranceData: null,
+      currentOrderData: null
+    };
+    
+    // Also clear files
+    const dataTypes = ['patientData', 'insuranceData', 'orderData'];
+    dataTypes.forEach(dataType => {
+      try {
+        const testDataDir = path.join(process.cwd(), 'TestData');
+        const filePath = path.join(testDataDir, `${dataType}.json`);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          console.log(`✓ Cleared ${dataType} file`);
+        }
+      } catch (error) {
+        console.warn(`⚠ Failed to clear ${dataType} file:`, error.message);
+      }
+    });
   }
 
   /**

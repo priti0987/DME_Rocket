@@ -438,21 +438,37 @@ When('I select the location', async function () {
     // Wait for options to load
     await OrderUtils.waitForSelectOptions(this.page, credentials.selectors.orderCreation.locationField);
     
-    // Get available options and select the first non-empty one
+    // Get available options
     const options = await locationField.locator('option').allTextContents();
-    const validOptions = options.filter(option => option.trim() && option.trim() !== 'Select...');
+    console.log('Available location options:', options);
     
-    if (validOptions.length > 0) {
-      const selectedLocation = validOptions[0];
-      await locationField.selectOption({ label: selectedLocation });
-      
-      // Store location value for notes building
-      orderFieldValues.location = selectedLocation;
-      
+    // Try to select "Hilton Head Island" specifically
+    const hiltonHeadOption = options.find(option => 
+      option.trim() === 'Hilton Head Island' ||
+      option.toLowerCase().includes('hilton head island') ||
+      option.toLowerCase().includes('hilton head')
+    );
+    
+    let selectedLocation;
+    
+    if (hiltonHeadOption) {
+      await locationField.selectOption({ label: hiltonHeadOption });
+      selectedLocation = hiltonHeadOption;
       console.log(`✓ Selected location: "${selectedLocation}"`);
     } else {
-      throw new Error('No valid location options available');
+      // Fallback to first valid option if Hilton Head Island not found
+      const validOptions = options.filter(option => option.trim() && option.trim() !== 'Select...');
+      if (validOptions.length > 0) {
+        selectedLocation = validOptions[0];
+        await locationField.selectOption({ label: selectedLocation });
+        console.log(`✓ Fallback: Selected location: "${selectedLocation}" (Hilton Head Island not available)`);
+      } else {
+        throw new Error('No valid location options available');
+      }
     }
+    
+    // Store location value for notes building
+    orderFieldValues.location = selectedLocation;
     
   } catch (error) {
     console.error('Error selecting location:', error.message);

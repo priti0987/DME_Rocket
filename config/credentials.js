@@ -5,9 +5,9 @@ const email = process.env.ROCKET_EMAIL || 'arunkumar.b@hashroot.com';
 const password = process.env.ROCKET_PASSWORD || 'Pacs@Merge11';
 
 const selectors = {
-  username: '#username',
-  password: '#password',
-  continueButton: 'button[type="submit"]',
+  username: 'input#Email',
+  password: 'input#Password',
+  continueButton: 'button#Continue',
   postLoginMenu: '#dme-sidebar-menu',
   // Popup/Modal selectors
   modalDialog: 'div.rocket-modal-dialog, div[role="dialog"], .modal-dialog',
@@ -21,19 +21,31 @@ const selectors = {
   },
   // Patient Search selectors
   patientSearch: {
-    mrnField: 'input[id="PatientSearchQuery_MRN"], input[name="PatientSearchQuery_MRN"], input.form-control[data-val-required*="MRN"]',
+    // Search form fields
+    mrnField: 'input#searchMRN, input[id="PatientSearchQuery_MRN"], input[name="PatientSearchQuery_MRN"], input.form-control[data-val-required*="MRN"]',
     firstNameField: 'input[name="PatientSearchQuery_FirstName"], input[placeholder*="First Name"]',
     lastNameField: 'input[name="PatientSearchQuery_LastName"], input[placeholder*="Last Name"]',
-    searchButton: 'button:has-text("Search Patients"), button[type="submit"]:has-text("Search")',
+    
+    // Search actions
+    searchButton: 'button#searchPatient, button:has-text("Search Patients"), button[type="submit"]:has-text("Search")',
     clearButton: 'button:has-text("Clear Search"), button[type="button"]:has-text("Clear")',
+    
+    // Results display
     resultsTable: 'table.table-responsive, table.table-striped, .patient-search-results table',
     patientRow: 'tbody tr, tr:has(td)',
     clickablePatientRow: 'tbody tr:has(td) a, tbody tr:has(td)[onclick], tbody tr:has(td)[data-href], tbody tr:has(td) td:first-child',
     firstPatientRecord: 'tbody tr:first-child, #patient-search-results tr:first-child',
     patientMrnCell: 'tbody tr td:first-child, tbody tr td:has-text("MRN")',
+    patientLink: 'a.patient-link, tbody tr td a, tbody tr a[href*="patient"]',
+    
+    // States and messages
     noResultsMessage: '.no-results, .empty-state, :has-text("No patients found"), :has-text("Results 1-10")',
     loadingIndicator: '.loading, .spinner, [data-loading="true"]',
-    paginationInfo: ':has-text("Results"), .pagination-info'
+    paginationInfo: ':has-text("Results"), .pagination-info',
+    
+    // Navigation
+    patientSearchPage: 'a[href*="PatientSearch"], a:has-text("Patient Search")',
+    patientSearchMenuItem: '#dme-sidebar-menu a:has-text("Patient Search"), .nav-link:has-text("Patient Search")'
   },
   // Patient Details selectors (generic - no hardcoded values)
   patientDetails: {
@@ -44,7 +56,7 @@ const selectors = {
     patientInfo: '.patient-info, #Patient-Info',
     deactivateButton: 'button:has-text("Deactivate Patient")',
     backToPatients: 'button:has-text("Back to Patients"), a:has-text("Back to Patients")',
-    createNewOrderButton: 'button:has-text("Create New Order"), .btn:has-text("Create New Order"), a:has-text("Create New Order")'
+    createNewOrderButton: 'a#btnCreateNewOrder, button:has-text("Create New Order"), .btn:has-text("Create New Order"), a:has-text("Create New Order")'
   },
   // Create Patient selectors
   createPatient: {

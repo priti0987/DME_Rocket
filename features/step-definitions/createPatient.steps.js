@@ -361,4 +361,120 @@ When('I reset patient data', async function () {
   console.log('✓ Patient data reset');
 });
 
+// New step definitions for E2E flow with proper session management
+When('I generate and store patient data for the session', async function () {
+  try {
+    console.log('Generating and storing patient data for session...');
+    
+    // Generate patient data and store in DataGenerator session
+    const patientData = DataGenerator.generatePatientData();
+    
+    // Also store in local variable for backward compatibility
+    generatedPatientData = patientData;
+    
+    console.log(`✓ Generated patient data: MRN=${patientData.mrn}, FirstName=${patientData.firstName}, LastName=${patientData.lastName}`);
+  } catch (error) {
+    console.error('Error generating patient data:', error.message);
+    throw error;
+  }
+});
+
+When('I enter the generated MRN', async function () {
+  try {
+    console.log('Entering the generated MRN...');
+    
+    // Get MRN from session or local storage
+    const mrn = DataGenerator.getCurrentMRN() || generatedPatientData.mrn;
+    
+    if (!mrn) {
+      throw new Error('No MRN found. Patient data must be generated first.');
+    }
+    
+    console.log(`Using MRN: ${mrn}`);
+    
+    // Wait for MRN field and enter the generated MRN
+    const mrnField = this.page.locator(credentials.selectors.createPatient.mrnField);
+    await mrnField.waitFor({ state: 'visible', timeout: 10000 });
+    
+    await mrnField.fill('');
+    await mrnField.fill(mrn);
+    
+    // Verify the value was entered correctly
+    const enteredValue = await mrnField.inputValue();
+    expect(enteredValue).toBe(mrn);
+    
+    console.log(`✓ Entered MRN: ${mrn}`);
+  } catch (error) {
+    console.error('Error entering MRN:', error.message);
+    await this.page.screenshot({ path: 'generated-mrn-entry-error.png', fullPage: true });
+    throw error;
+  }
+});
+
+When('I enter the generated First Name', async function () {
+  try {
+    console.log('Entering the generated First Name...');
+    
+    // Get patient data from session
+    const patientData = DataGenerator.getCurrentPatientData() || generatedPatientData;
+    const firstName = patientData.firstName;
+    
+    if (!firstName) {
+      throw new Error('No First Name found. Patient data must be generated first.');
+    }
+    
+    console.log(`Using First Name: ${firstName}`);
+    
+    // Wait for First Name field and enter the generated name
+    const firstNameField = this.page.locator(credentials.selectors.createPatient.firstNameField);
+    await firstNameField.waitFor({ state: 'visible', timeout: 10000 });
+    
+    await firstNameField.fill('');
+    await firstNameField.fill(firstName);
+    
+    // Verify the value was entered correctly
+    const enteredValue = await firstNameField.inputValue();
+    expect(enteredValue).toBe(firstName);
+    
+    console.log(`✓ Entered First Name: ${firstName}`);
+  } catch (error) {
+    console.error('Error entering First Name:', error.message);
+    await this.page.screenshot({ path: 'generated-firstname-entry-error.png', fullPage: true });
+    throw error;
+  }
+});
+
+When('I enter the generated Last Name', async function () {
+  try {
+    console.log('Entering the generated Last Name...');
+    
+    // Get patient data from session
+    const patientData = DataGenerator.getCurrentPatientData() || generatedPatientData;
+    const lastName = patientData.lastName;
+    
+    if (!lastName) {
+      throw new Error('No Last Name found. Patient data must be generated first.');
+    }
+    
+    console.log(`Using Last Name: ${lastName}`);
+    
+    // Wait for Last Name field and enter the generated name
+    const lastNameField = this.page.locator(credentials.selectors.createPatient.lastNameField);
+    await lastNameField.waitFor({ state: 'visible', timeout: 10000 });
+    
+    await lastNameField.fill('');
+    await lastNameField.fill(lastName);
+    
+    // Verify the value was entered correctly
+    const enteredValue = await lastNameField.inputValue();
+    expect(enteredValue).toBe(lastName);
+    
+    console.log(`✓ Entered Last Name: ${lastName}`);
+  } catch (error) {
+    console.error('Error entering Last Name:', error.message);
+    await this.page.screenshot({ path: 'generated-lastname-entry-error.png', fullPage: true });
+    throw error;
+  }
+});
+
 module.exports = {};

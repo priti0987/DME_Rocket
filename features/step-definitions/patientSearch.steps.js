@@ -2,6 +2,7 @@ const { Given, When, Then } = require('@cucumber/cucumber');
 const { expect } = require('@playwright/test');
 const credentials = require('../../config/credentials.js');
 const TestDataReader = require('../../utils/testDataReader.js');
+const DataGenerator = require('../../utils/dataGenerator.js');
 
 /**
  * Patient Search Step Definitions
@@ -9,25 +10,44 @@ const TestDataReader = require('../../utils/testDataReader.js');
  */
 
 When('I enter the MRN in the MRN search field', async function () {
-  // Get MRN from test data
-  const mrn = TestDataReader.getMRN('primary');
-  console.log(`Entering MRN: ${mrn}`);
-  
-  // Wait for MRN field to be visible (assuming we're already on patient search page after login)
-  await this.page.waitForSelector(credentials.selectors.patientSearch.mrnField, { 
-    state: 'visible', 
-    timeout: 15000 
-  });
-  
-  // Clear any existing value and enter MRN
-  await this.page.fill(credentials.selectors.patientSearch.mrnField, '');
-  await this.page.fill(credentials.selectors.patientSearch.mrnField, mrn);
-  
-  // Optional: Press Enter or click search button
-  await this.page.keyboard.press('Enter');
-  
-  // Wait for search to complete
-  await this.page.waitForLoadState('networkidle');
+  try {
+    console.log('Entering MRN in search field...');
+    
+    // Get MRN from session (E2E flow) or test data (standalone test)
+    let mrn = DataGenerator.getCurrentMRN();
+    if (!mrn) {
+      mrn = TestDataReader.getMRN('primary');
+    }
+    
+    if (!mrn) {
+      throw new Error('No MRN found. Patient must be created first or test data must be available.');
+    }
+    
+    console.log(`Using MRN: ${mrn}`);
+    
+    // Wait for MRN field to be visible
+    await this.page.waitForSelector(credentials.selectors.patientSearch.mrnField, { 
+      state: 'visible', 
+      timeout: 15000 
+    });
+    
+    // Clear any existing value and enter MRN
+    await this.page.fill(credentials.selectors.patientSearch.mrnField, '');
+    await this.page.fill(credentials.selectors.patientSearch.mrnField, mrn);
+    
+    // Press Enter to trigger search
+    await this.page.keyboard.press('Enter');
+    
+    // Wait for search to complete
+    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForTimeout(2000);
+    
+    console.log(`✓ Successfully entered and searched for MRN: ${mrn}`);
+  } catch (error) {
+    console.error('Error entering MRN in search field:', error.message);
+    await this.page.screenshot({ path: 'mrn-search-entry-error.png', fullPage: true });
+    throw error;
+  }
 });
 
 When('I enter an invalid MRN in the MRN search field', async function () {
