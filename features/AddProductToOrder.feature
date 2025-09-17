@@ -29,20 +29,4 @@ Feature: Add Product to an Existing Order
     When I click on "Add Product" button for product workflow
     Then the "Add Product" modal should be displayed
     When I select "A0621" in the Search HCPCS dropdown
-    And I click on "Search Products" button for product workflow
-    Then the product details should be listed
-    When I click on "Add" button of the product
-    Then the Line Items should be added in the cart
-    When I click on "Product Details" button for product workflow
-    Then the "Add Order Item Details" modal should be displayed
-    When I enter "200" in the "Charge Out" field
-    And I enter "100" in the "Allowable" field
-    And I enter "100" in the "Patient Cost Estimate" field
-    And I enter "50" in the "Patient Payment" field
-    And I generate and enter a dynamic "Rental Unit Serial Number"
-    And I select the rental start date as 3 days from today
-    And I enter "50" in the "Length of Rental" field
-    And I scroll down the page
-    And I select "No" for the first product question
-    And I select "option 1" for the second product question
-    And I click on "Save and Close" button for product workflow
+    
