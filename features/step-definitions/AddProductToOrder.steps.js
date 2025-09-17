@@ -969,3 +969,70 @@ When('I select {string} for the second product question', async function (option
     console.log('⚠️ Skipping second question and continuing...');
   }
 });
+
+// ==================== GENERIC BUTTON CLICK STEP ====================
+
+When('I click on {string} button', async function (buttonText) {
+  try {
+    console.log(`Step: Clicking on "${buttonText}" button`);
+    
+    // Debug current page state
+    const currentUrl = this.page.url();
+    console.log(`Current URL: ${currentUrl}`);
+    
+    let selectors = [];
+    
+    // Define button-specific selectors
+    if (buttonText === 'Product Details') {
+      selectors = [
+        '#product-details',
+        'div#product-details.btn.btn-add.rocket-text-body',
+        '.btn.btn-add:has-text("Product Details")',
+        'div:has-text("Product Details")',
+        'button:has-text("Product Details")',
+        '.btn:has-text("Product Details")'
+      ];
+    } else {
+      // Generic button selectors
+      selectors = [
+        `button:has-text("${buttonText}")`,
+        `a:has-text("${buttonText}")`,
+        `.btn:has-text("${buttonText}")`,
+        `div:has-text("${buttonText}")`,
+        `[onclick*="${buttonText.toLowerCase()}"]`
+      ];
+    }
+    
+    // Try each selector
+    let buttonClicked = false;
+    for (const selector of selectors) {
+      try {
+        console.log(`Trying button selector: ${selector}`);
+        const button = this.page.locator(selector);
+        const count = await button.count();
+        
+        if (count > 0) {
+          await button.first().click({ timeout: 10000 });
+          console.log(`✓ Successfully clicked "${buttonText}" button: ${selector}`);
+          buttonClicked = true;
+          break;
+        }
+      } catch (e) {
+        console.log(`Button selector ${selector} failed: ${e.message}`);
+        continue;
+      }
+    }
+    
+    if (!buttonClicked) {
+      throw new Error(`${buttonText} button not found`);
+    }
+    
+    // Wait for any resulting actions
+    await this.page.waitForTimeout(2000);
+    
+  } catch (error) {
+    console.error(`❌ Failed to click "${buttonText}" button:`, error.message);
+    await this.page.screenshot({ path: `click-${buttonText.toLowerCase().replace(/\s+/g, '-')}-button-error.png`, fullPage: true });
+    throw error;
+  }
+});

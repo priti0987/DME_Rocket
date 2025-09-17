@@ -18,7 +18,7 @@ Feature: Add Product to an Existing Order
     # Use the MRN from your DOM reference (MRNQA3852) or search for any patient
     When I enter "MRNQA3852" in the MRN search field
     Then I should see the patient details displayed
-    When I click on the first patient record
+    When I click on the patient record with MRN "MRNQA3852"
     Then I should be navigated to the patient details page
     And click on the Cancel button of set location modal
 
@@ -29,4 +29,6 @@ Feature: Add Product to an Existing Order
     When I click on "Add Product" button for product workflow
     Then the "Add Product" modal should be displayed
     When I select "A0621" in the Search HCPCS dropdown
+    And I click on "Search Products" button for product workflow
+    
     
