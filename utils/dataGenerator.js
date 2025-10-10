@@ -56,6 +56,17 @@ class DataGenerator {
     return `QAFirstName${this.randomAlpha(3)}`;
   }
 
+    static generateCompanyName() {
+    return `companyName${this.randomAlpha(3)}`;
+  }
+   static generateAddressLine() {
+    return `addressLine${this.randomAlpha(3)}`;
+  }
+
+     static generateShippingTerms() {
+    return `shippingTerms${this.randomAlpha(4)}`;
+  }
+
   /**
    * Generate dynamic Last Name for patient creation
    * Format: QALastName + 3 random alphabets
@@ -283,6 +294,9 @@ class DataGenerator {
     const username = `qa${this.randomAlpha(3).toLowerCase()}${this.randomInt(3)}`;
     return `${username}@${domain}`;
   }
+
+
+
 
   /**
    * Generate random phone number

@@ -1,8 +1,8 @@
 // Centralized credentials and selectors with environment overrides
 
 const baseUrl = process.env.ROCKET_BASE_URL || 'https://staging.dmerocket.com/';
-const email = process.env.ROCKET_EMAIL || 'arunkumar.b@hashroot.com';
-const password = process.env.ROCKET_PASSWORD || 'Pacs@Merge11';
+const email = process.env.ROCKET_EMAIL || 'priti.b@hashroot.com';
+const password = process.env.ROCKET_PASSWORD || 'R0cketT3st!';
 
 const selectors = {
   username: 'input#Email',
@@ -156,14 +156,34 @@ const selectors = {
     newOrderRow: 'tr:first-child, .order-item:first-child',
     orderStatus: '.order-status, .status-badge',
     patientOrderSummary: '.patient-order-summary, #patient-orders'
-  }
-};
+  },
+  supplierDetails: {
+    companyName: '#CompanyName',
+    addressLine_1: '#AddressLine1',
+    addressLine_2: '#AddressLine2',
+    City: '#City',
+    website:'#Website',
+    State: '//select[@id="StateTerritoryId"]',
+    ZipCode: '#PostalCode',
+    Shipping_Terms:'#ShippingTerms',
+    Payment_Terms:'#PaymentTermsId',
+    SendOrderToEmail:'//input[@id="SendOrderToEmail"]',
+    Supplier_Notes:'#SupplierNotes',
+    Title:'#Title',
+    firstNameField:'#FirstName',
+    lastNameField:'#LastName',
+    emailField:'#EmailAddress',
+    phoneField:'#PhoneNumber',
+    client_1:'//select[@id="ClientId-1"]',
+    AccountNumber_1:'#AccountNumber-1'}
+};  
 
 module.exports = {
   baseUrl,
   email,
   password,
   selectors,
+  
 };
 
 

@@ -1,8 +1,10 @@
 const { setWorldConstructor, World } = require('@cucumber/cucumber');
+
 const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs');
 const { config } = require('./config.cjs');
+const { expect } = require('playwright/test');
 
 class TestWorld extends World {
   async initBrowser() {
@@ -96,6 +98,179 @@ class TestWorld extends World {
       throw error;
     }
   }
+  async selectFromDropdown(page, selector, value, fieldName) {
+    console.log(`Selecting ${value} in ${fieldName} dropdown using ${selector}..`);
+  try {
+    
+    await page.waitForSelector(selector);
+    console.log(`Dropdown ${fieldName} is visible.`);
+    // Use selectOption to choose the value
+    const locator = page.locator(selector);
+    await locator.selectOption({ label: value });
+    console.log(`Selected ${fieldName}: ${value}`);
+    // Optionally add further verification
+  } catch (error) {
+    console.error(`Error selecting ${fieldName}:`, error.message);
+    await page.screenshot({ path: `${fieldName}-select-error.png`, fullPage: true });
+    throw error;
+  }
+}
+/**
+ * Fills an input field, waits for visibility, verifies entry, and handles errors/screenshots.
+ * @param {import('@playwright/test').Page} page - Playwright page instance.
+ * @param {string} selector - Selector for the field to fill.
+ * @param {string} value - Value to enter.
+ * @param {string} fieldName - Short name for logging and screenshot.
+ */
+
+  async hoverLeftMenuBar() {
+    console.log('Hovering over the left menu bar to ensure visibility...');
+      try {
+        const leftPanel = this.page.locator('//div[@id="dme-sidebar-menu"]');
+        console.log('Locator for sidebar menu:', leftPanel);
+        await expect(leftPanel).toBeVisible({ timeout: 1000 });
+        if (await leftPanel.isVisible()) {
+            await this.page.locator('//div[@id="dme-sidebar-menu"]').hover();
+            console.log('Sidebar menu was hidden, hovered to reveal it.');
+        } 
+      } catch (error) {
+        console.error('Error locating the sidebar menu:', error);
+        console.log('Attempting to click the sidebar toggle button as a fallback.');
+      }
+           
+
+    }
+    async clickOnText(menuItem) {
+        try {
+          console.log(`Navigating to menu item: ${menuItem}`);
+          const locator = `//*[text()="${menuItem}"]`;
+          const menu = await this.page.locator(locator);
+          console.log('Locator for menu......:', menu);
+          if (await menu.isVisible()) {
+            await menu.click();
+            console.log(`Clicked the ${menuItem} `);
+        }
+        await this.page.waitForLoadState('networkidle');
+        await this.page.waitForTimeout(1000); // Wait for 2 seconds to ensure page loads
+        } catch (error) {
+          console.error(`Error clicking the ${menuItem} menu:`, error);
+        }
+
+    }
+
+async elementISVisibleOnPage(locator,pageName){    try {
+        
+        await this.page.waitForLoadState('networkidle');    
+        if (await locator.isVisible())
+          {
+        console.log(`Successfully navigated to the ${pageName}] page, And ${locator} is visible`); 
+          }
+
+    } catch (error) {
+        console.error(`Error verifying the ${pageName} page:`, error);
+    }}    
+
+  async clickElementByClass(className, elementDescription) {
+
+        try {
+        const newSupplierButton = this.page.locator(`//a[contains(@class,"${className}")]`);
+        if (await newSupplierButton.isVisible()){
+            await newSupplierButton.click();
+            console.log(`Clicked on the ${elementDescription}`);
+        }
+    } catch (error) {
+        console.log(`Error clicking the ${elementDescription}:`, error);
+    }
+
+    }
+    /**
+ * Checks if any selector in the array matches a visible element on the page.
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @param {string[]} selectors - Array of CSS or locator selectors
+ * @param {string} elementName - Friendly name for logging (e.g., "Supplier page element")
+ * @returns {Promise<boolean>} True if at least one selector matches a visible element
+ */
+  async checkPageElementsVisible(page, selectors, elementName = 'page element') {
+  let elementFound = false;
+
+  for (const selector of selectors) {
+    try {
+      console.log(`Trying ${elementName} selector: ${selector}`);
+      const element = page.locator(selector);
+      const isVisible = await element.isVisible();
+
+      if (isVisible) {
+        console.log(`Found ${elementName}: ${selector}`);
+        elementFound = true;
+        break;
+      }
+    } catch (error) {
+      console.log(`${elementName} selector ${selector} failed: ${error.message}`);
+      continue;
+    }
+  }
+
+  if (!elementFound) {
+    console.log(`⚠ ${elementName}s not found, but URL is correct`);
+  }
+
+  return elementFound;
+  }  
+  async fillAndVerifyField(page, selector, value, fieldName) {
+  try {
+    const fieldLocator = page.locator(selector);
+    console.log(`Locator for ${fieldName} field:`, fieldLocator);
+
+    await fieldLocator.waitFor({ state: 'visible', timeout: 10000 });
+    await fieldLocator.fill('');
+    console.log(`Filling ${fieldName} with value: ${value}`);
+    await fieldLocator.fill(value);
+
+    // Verify the value was entered correctly
+    const enteredValue = await fieldLocator.inputValue();
+    expect(enteredValue).toBe(value);
+
+    console.log(`Entered ${fieldName}: ${value}`);
+  } catch (error) {
+    console.error(`Error entering ${fieldName}:`, error.message);
+    await page.screenshot({ path: `${fieldName}-entry-error.png`, fullPage: true });
+    throw error;
+  }
+  await page.waitForTimeout(100); // Wait a moment to ensure all elements are loaded
+}
+/**
+ * Clicks the first element in the array that is visible and enabled.
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @param {string[]} selectors - Array of Playwright selectors/locator strings
+ * @param {string} elementName - Friendly name for logging
+ * @returns {Promise<boolean>} True if an element was clicked, otherwise false
+ */
+async clickFirstVisibleEnabled(page, selectors, elementName = 'element') {
+  await page.waitForLoadState('networkidle');
+  for (const selector of selectors) {
+  await page.waitForTimeout(1000); // Wait a moment to ensure all elements are loaded
+ 
+    try {
+      console.log(`Trying ${elementName} selector: ${selector}`);
+      const element = await page.locator(selector);
+
+      // Wait for the element, but don't throw if not found
+      if (await element.isVisible() && await element.isEnabled()) {
+        await element.click();
+        console.log(`Clicked ${elementName}: ${selector}`);
+        return true;
+      }
+    } catch (error) {
+      console.log(`${elementName} selector ${selector} failed: ${error.message}`);
+      continue;
+    }
+  }
+  console.log(`⚠ No visible and enabled ${elementName} found to click.`);
+  return false;
+}
+
+
+
 }
 
 setWorldConstructor(TestWorld);

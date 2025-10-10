@@ -268,7 +268,7 @@ When('click on the Cancel button of set location modal', async function () {
     console.log('Looking for set location modal...');
     
     // Wait a moment for any modal to appear after login
-    await this.page.waitForTimeout(3000);
+    await this.page.waitForTimeout(1000);
     
     // Check for multiple possible modal selectors
     const modalSelectors = [
