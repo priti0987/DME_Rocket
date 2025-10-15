@@ -1,5 +1,6 @@
-@create-Supplier
-Feature: Create New Supplier
+@create-Product
+Feature: Create New product
+
 
   Background:
     Given I launch the Rocket application
@@ -9,22 +10,34 @@ Feature: Create New Supplier
     Then I should be logged in successfully
     And click on the Cancel button of set location modal
 
-  @smoke @create-Supplier
-  Scenario: Create a new supplier successfully
-    Given I navigate to "Inventory"
-    When I select "Supplier" from the dropdown
+  @smoke @create-Product
+  Scenario: Create a new Product successfully
+    Given I navigate to "Inventory" from the main menu
+    When I select "Products List" from the dropdown
     And click on the Cancel button of set location modal
-    Then I should be on the "Supplier" page
-    When I click on new Supplier button
-    Then The "Create Supplier" modal should open
-    When I enter dynamically generated company name
-    And I enter dynamically generated Address Line
-    And I enter "New York" as City
-    And I select "Alabama" as State
-    And I enter dynamically generated zip code
-    And I enter dynamically generated Shipping Terms
-    And I select "Net 15" as Payment Terms
-    And I enter dynamically generated SendOrderToEmail
+    When I click on "Add Product" button
+    #I click on "Add" button of the product
+    Then the "Add Product" modal should be displayed
+
+    #Fill product details
+    When I enter dynamically generated product "Name"
+    And I enter dynamically generated product "SKU"
+    And I enter dynamically generated product "Barcode"
+    And I select "Service Product" as "Product Type"
+    And I select "LG" as "size"
+    And I enter "Black" as "color"
+    And I select "LT" as "Laterality"
+    And I select "A0622" as "HCPCS"
+    And I select "AFAC-Phoenix" as "Client Locations"
     And I click on "Save and Close" button
     And click on the Cancel button of set location modal
-    Then I should see the newly created supplier in the supplier list
+    Then I should see the newly created "Product"
+    #link supplier
+
+    When I click on "Add Supplier" button
+    Then The "Link Supplier" modal should open
+    When I enter dynamically generated supplier name in the search box
+    
+
+
+    

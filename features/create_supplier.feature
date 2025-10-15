@@ -29,7 +29,7 @@ Feature: Create New Supplier
     And I enter dynamically generated SendOrderToEmail
     And I click on "Save and Close" button
     And click on the Cancel button of set location modal
-    Then I should see the newly created supplier in the supplier list
+    Then I should see the newly created "Supplier"
 
   #Add Supplier notes
     When I click on Add Notes button
@@ -58,4 +58,5 @@ Feature: Create New Supplier
   #Create Product 
 
   #Add supplied products for supplier
+  #link supplier to product
 

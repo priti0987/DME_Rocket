@@ -1710,14 +1710,21 @@ When('I click on {string} button', async function (buttonText) {
         'button:has-text("Product Details")',
         '.btn:has-text("Product Details")'
       ];
-    } else {
+    }else if (buttonText.toLowerCase().includes('add')) {
+      selectors = [
+        'a.btn-add i.fa-plus-large',
+        'a.btn.btn-add.btn-xs'
+      ];
+    } 
+    else {
       // Generic button selectors
       selectors = [
         `button:has-text("${buttonText}")`,
         `a:has-text("${buttonText}")`,
         `.btn:has-text("${buttonText}")`,
         `div:has-text("${buttonText}")`,
-        `[onclick*="${buttonText.toLowerCase()}"]`
+        `[onclick*="${buttonText.toLowerCase()}"]`,
+        'a.btn.btn-add.btn-xs'
       ];
     }
     

@@ -4,6 +4,7 @@ const baseUrl = process.env.ROCKET_BASE_URL || 'https://staging.dmerocket.com/';
 const email = process.env.ROCKET_EMAIL || 'priti.b@hashroot.com';
 const password = process.env.ROCKET_PASSWORD || 'R0cketT3st!';
 
+
 const selectors = {
   username: 'input#Email',
   password: 'input#Password',
@@ -175,9 +176,25 @@ const selectors = {
     emailField:'#EmailAddress',
     phoneField:'#PhoneNumber',
     client_1:'//select[@id="ClientId-1"]',
-    AccountNumber_1:'#AccountNumber-1'}
-};  
+    AccountNumber_1:'#AccountNumber-1',
+    editButton:'a:has-text("Edit")',
+    statusField : '#IsActive',
+  },
+  
 
+create_Product: {
+    productName: '#Name',
+    sku: '#Code',
+    barcode: '#Barcode',
+    productType: 'select#ProductTypeId',
+    color: '#Color',
+    size: '#Size',
+    Laterality: 'select#Laterality',
+    HCPCS: 'select#hcpcListBox',
+    ClientLocations : 'select#clientLocationListBox'
+
+  }
+};
 module.exports = {
   baseUrl,
   email,
@@ -185,5 +202,3 @@ module.exports = {
   selectors,
   
 };
-
-

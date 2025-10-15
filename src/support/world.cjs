@@ -21,7 +21,7 @@ class TestWorld extends World {
     this.page = await this.context.newPage();
     this.baseUrl = config.BASE_URL;
     this.browserName = 'chromium';
-  }
+    }
 
   async ensureOnPatientSearchPage() {
     try {
@@ -97,7 +97,7 @@ class TestWorld extends World {
       await this.page.screenshot({ path: 'patient-search-navigation-error.png', fullPage: true });
       throw error;
     }
-  }
+    }
   async selectFromDropdown(page, selector, value, fieldName) {
     console.log(`Selecting ${value} in ${fieldName} dropdown using ${selector}..`);
   try {
@@ -114,7 +114,7 @@ class TestWorld extends World {
     await page.screenshot({ path: `${fieldName}-select-error.png`, fullPage: true });
     throw error;
   }
-}
+    }
 /**
  * Fills an input field, waits for visibility, verifies entry, and handles errors/screenshots.
  * @param {import('@playwright/test').Page} page - Playwright page instance.
@@ -140,7 +140,7 @@ class TestWorld extends World {
            
 
     }
-    async clickOnText(menuItem) {
+  async clickOnText(menuItem) {
         try {
           console.log(`Navigating to menu item: ${menuItem}`);
           const locator = `//*[text()="${menuItem}"]`;
@@ -158,12 +158,12 @@ class TestWorld extends World {
 
     }
 
-async elementISVisibleOnPage(locator,pageName){    try {
+  async elementISVisibleOnPage(locator,pageName){    try {
         
         await this.page.waitForLoadState('networkidle');    
         if (await locator.isVisible())
           {
-        console.log(`Successfully navigated to the ${pageName}] page, And ${locator} is visible`); 
+        console.log(`Successfully navigated to the ${pageName} page, And ${locator} is visible`); 
           }
 
     } catch (error) {
@@ -269,7 +269,23 @@ async clickFirstVisibleEnabled(page, selectors, elementName = 'element') {
   return false;
 }
 
+async clickLocator(locator, description) {
+  try {
+    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForTimeout(1000);
+    const element = this.page.locator(locator);
+    await element.waitFor({ state: 'visible', timeout: 5000 });
+    await element.click();
+    console.log(`Clicked on ${description} (${locator})`);
+  } catch (error) {
+    console.error(`Error clicking on ${description} (${locator}):`, error);
+    await this.page.screenshot({ path: `${description.replace(/\s+/g, '_')}-click-error.png`, fullPage: true });
+    throw error;
+  } };
 
+
+
+  
 
 }
 
